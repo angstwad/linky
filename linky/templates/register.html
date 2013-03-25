@@ -1,0 +1,27 @@
+{% extends "header.html" %}
+
+{% block content %}
+    {% if do_register %}
+        <form method="POST" action="" xmlns="http://www.w3.org/1999/html">
+            {{ form.hidden_tag() }}
+            <span>Registration Email:<br/></span>
+            {{ form.email(size=30) }}
+            {% for error in form.errors.email %}
+                <span style="color: red;">[{{error}}]</span>
+            {% endfor %}
+            <br/>
+            <input type="SUBMIT" value="Register">
+        </form>
+
+    {% elif db_results.is_good == True %}
+        <h1>Your email was successfully registered!<br/></h1>
+        <h3>Check your email for a registration email.</h3>
+        <span>You'll need to verify your email before we get started.  :)</span>
+    {% elif db_results.is_good == False %}
+        {% if 'IntegrityError' in db_results.e_msg or 'Duplicate' in db_results.e_msg %}
+            <h1>Whoa!<br/></h1>
+            <span>This email's already been registered.  Need to
+                <a href="{{ url_for('recover') }}">recover</a> your account?</span>
+        {% endif %}
+    {% endif %}
+{% endblock %}

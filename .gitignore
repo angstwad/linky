@@ -1,0 +1,15 @@
+# Proj related
+config.py
+*.db
+
+# Virtualenv/PyCharm 
+*.pyc
+.Python
+.idea/
+lib/
+include/
+bin/
+
+# Mac
+.DS_Store
+*.swp
