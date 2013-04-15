@@ -1,39 +1,72 @@
-from db_def import Session, user_register, user_verified, emails_sent
-from gen_hash import gen_sha_hash
-from datetime import datetime
-from collections import namedtuple
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
-from . import logger
+
 import exc
+
+from datetime import datetime
+from collections import namedtuple
+
 from config import MAX_EMAILS_PER_DAY
+from db_def import Session, user_register, user_verified, emails_sent
+from gen_hash import gen_sha_hash
+from . import logger
 
 
 class register(object):
     def __init__(self, email):
         self.session = Session()
         self.email = email
-        self.fail_tup = namedtuple('dbfail', ['is_good', 'e_msg'])
-        self.success_tup = namedtuple('dbsuccess', ['is_good', 'email', 'hash'])
+
+    def __insert_reg_db(self, userhash):
+        logger.info('Beginning insert of %s into user_register DB.'
+                    % self.email)
+        new_user = user_register(email=self.email, send_key=userhash,
+                                 create_time=datetime.utcnow(),
+                                 last_login=datetime.utcnow())
+        self.session.add(new_user)
+
+        try:
+            self.session.commit()
+        except sqlalchemy.exc.IntegrityError as e:
+            logger.warning('Duplicate email found in '
+                           'user_registered table: %s' % self.email)
+            logger.exception(e.message)
+        except Exception as e:
+            logger.exception(e.message)
+        else:
+            logger.info('Email registered, written to DB: %s' % self.email)
+            return {'email': self.email,
+                    'hash': userhash}
+
+    def __in_verified_db(self):
+        logger.info('Checking verified DB for email %s.' % self.email)
+        if self.session.query(user_verified)\
+                       .filter_by(email=self.email)\
+                       .count() > 0:
+            pass
+        else:
+            return True
 
     def do_register(self):
-        try:
-            sha_hash = gen_sha_hash(self.email)
-            new_user = user_register(email=self.email, send_key=sha_hash, create_time=datetime.utcnow(),
-                                     last_login=datetime.utcnow())
-            logger.info('Attempt to register email: %s' % self.email)
-            if self.session.query(user_verified.email).filter_by(email=self.email).count() > 0:
-                logger.info('Duplicate email found in user_verified table: %s' % self.email)
-                return self.fail_tup(is_good=False, e_msg="Duplicate email found in user_verified table.")
-            self.session.add(new_user)
-        except sqlalchemy.exc.IntegrityError as e:
-            logger.warning('Duplicate email found in user_registered table: %s' % self.email)
-            logger.exception(e.message)
-            return self.fail_tup(is_good=False, e_msg=e.message)
+        logger.info('Attempt to register email: %s' % self.email)
+        if not self.__in_verified_db():
+            userhash = gen_sha_hash(self.email)
+            return self.__insert_reg_db(userhash)
+
+    def recover(self):
+        q_ver = self.session.query(user_verified)\
+                    .filter_by(email=self.email)\
+                    .first()
+        if q_ver:
+            return {'email': q_ver.email,
+                    'key': q_ver.email_key}
         else:
-            self.session.commit()
-            logger.info('Email registered, written to DB: %s' % self.email)
-            return self.success_tup(is_good=True, email=self.email, hash=sha_hash)
+            q_reg = self.session.query(user_register)\
+                                .filter_by(email=self.email)\
+                                .first()
+            if q_reg:
+                return {'email': q_reg.email,
+                        'key': q_reg.send_key}
 
 
 class verification(object):
