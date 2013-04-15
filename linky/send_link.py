@@ -1,8 +1,9 @@
+import threading
+
 import db
 import exc
 import config
 import mailgun
-import threading
 from . import logger
 
 
