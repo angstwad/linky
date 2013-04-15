@@ -20,9 +20,9 @@ class Register(object):
 
     def __in_verified_db(self):
         logger.info('Checking verified DB for email %s.' % self.email)
-        if self.session.query(UserVerified) \
-            .filter_by(email=self.email) \
-            .count() > 0:
+        if self.session.query(UserVerified)\
+                       .filter_by(email=self.email)\
+                       .count() > 0:
             logger.info('Registration fail, found in verified DB: %s'
                         % self.email)
             self.error = "Email has already been verified."
@@ -153,8 +153,8 @@ class Mail(object):
             logger.info('Email has no entry in '
                         'emails_sent DB: %s' % self.email_addr)
             self.session.add(EmailsSent(email=self.email_addr,
-                                         email_key=self.__sendkey,
-                                         num_sent=0))
+                                        email_key=self.__sendkey,
+                                        num_sent=0))
             requery()
         except sqlalchemy.orm.exc.MultipleResultsFound as e:
             logger.exception(e.message)
