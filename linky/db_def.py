@@ -8,23 +8,19 @@ Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 
 
-class user_register(Base):
+class UserRegister(Base):
     __tablename__ = 'user_registered'
 
-    def __init__(self, email, send_key, create_time, last_login):
+    def __init__(self, email, send_key):
         self.email = email
         self.send_key = send_key
-        self.create_time = create_time
-        self.last_login = last_login
 
     id = Column('id', Integer, primary_key=True)
     email = Column('email', Unicode(60), unique=True, nullable=False)
     send_key = Column('send_key', Unicode(30), nullable=False)
-    create_time = Column('created_time', DateTime)
-    last_login = Column('last_login', DateTime, default=datetime.utcnow)
 
 
-class user_verified(Base):
+class UserVerified(Base):
     __tablename__ = 'user_verified'
 
     id = Column('id', Integer, primary_key=True)
@@ -32,7 +28,7 @@ class user_verified(Base):
     email_key = Column('email_key', Unicode(50), nullable=False)
 
 
-class emails_sent(Base):
+class EmailsSent(Base):
     __tablename__ = 'emails_sent'
 
     id = Column('id', Integer, primary_key=True)
