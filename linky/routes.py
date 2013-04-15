@@ -14,27 +14,34 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
-    form = registration_form(request.form)
+    form = RegistrationForm(request.form)
 
     if form.validate() and request.method == 'POST':
-        db_result = db.register(form.email.data).do_register()
-        if db_result:
-            send_registration_email(db_result.email, db_result.hash)
+        reg = db.Register(form.email.data)
+        is_success = reg.do_register()
+        if is_success:
+            send_registration_email(reg.email, reg.key)
             return render_template('register.html', title='Registered!',
-                                   form=form, db_results=db_result)
-        elif not db_result:
+                                   form=form, reg_results=is_success)
+        elif not is_success:
             return render_template('register.html', title='Oops!',
-                                   form=form, db_results=db_result)
+                                   form=form, reg_results=is_success,
+                                   error=reg.error)
     else:
         return render_template('register.html', title='Register',
-                               form=form, do_register=True)
+                               form=form, show_registration=True)
 
 
 @app.route('/verify/<veri_code>')
 def verify(veri_code):
-    result = db.verification(veri_code).run_verification()
-    return render_template('verify.html', title="Verify",
-                           code=veri_code, result=result)
+    verify = db.Verification(veri_code)
+    result = verify.run_verification()
+    if not result:
+        return render_template('verify.html', title="Verify",
+                               code=veri_code, result=verify.error)
+    else:
+        return render_template('verify.html', title="Verify",
+                               code=veri_code, result=result)
 
 
 @app.route('/recover')
@@ -58,7 +65,7 @@ def send(userid):
     else:
         status = None
         try:
-            send_link_email(userid, request.json)
+            send_link.do_email(userid, request.json)
         except (exc.UserNotVerifiedException,
                 exc.UserNotFoundException,
                 exc.OverEmailSentLimitException,
