@@ -1,7 +1,7 @@
 {% extends "header.html" %}
 
 {% block content %}
-    {% if do_register %}
+    {% if show_registration %}
         <form method="POST" action="" xmlns="http://www.w3.org/1999/html">
             {{ form.hidden_tag() }}
             <span>Registration Email:<br/></span>
@@ -13,13 +13,13 @@
             <input type="SUBMIT" value="Register">
         </form>
 
-    {% elif db_results %}
+    {% elif reg_results %}
         <h1>Your email was successfully registered!<br/></h1>
         <h3>Check your email for a registration email.</h3>
         <span>You'll need to verify your email before we get started.  :)</span>
-    {% elif not db_results %}
+    {% elif not reg_results %}
         <h1>Whoa!<br/></h1>
-        <span>This email's already been registered.  Need to
+        <span>{{ error }}  Need to
             <a href="{{ url_for('recover') }}">recover</a> your account?</span>
     {% endif %}
 {% endblock %}
