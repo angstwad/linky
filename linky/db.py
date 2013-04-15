@@ -77,8 +77,11 @@ class verification(object):
     def check_verification(self):
         try:
             logger.info('Check if verified key %s' % self.key)
-            q = self.session.query(user_verified).filter_by(email_key=self.key).one()
-        except sqlalchemy.orm.exc.MultipleResultsFound or sqlalchemy.orm.exc.NoResultFound as e:
+            q = self.session.query(user_verified)\
+                    .filter_by(email_key=self.key)\
+                    .one()
+        except (sqlalchemy.orm.exc.MultipleResultsFound or
+                sqlalchemy.orm.exc.NoResultFound) as e:
             logger.exception(e.message)
             return False
         else:
@@ -88,8 +91,11 @@ class verification(object):
     def run_verification(self):
         try:
             logger.info('Verify key %s' % self.key)
-            q = self.session.query(user_register).filter_by(send_key=self.key).one()
-        except sqlalchemy.orm.exc.NoResultFound or sqlalchemy.orm.exc.MultipleResultsFound as e:
+            q = self.session.query(user_register)\
+                    .filter_by(send_key=self.key)\
+                    .one()
+        except (sqlalchemy.orm.exc.NoResultFound,
+                sqlalchemy.orm.exc.MultipleResultsFound) as e:
             logger.exception(e.message)
         else:
             if self._reg_db_to_ver_db(q):
