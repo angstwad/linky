@@ -80,7 +80,7 @@ class verification(object):
             q = self.session.query(user_verified)\
                     .filter_by(email_key=self.key)\
                     .one()
-        except (sqlalchemy.orm.exc.MultipleResultsFound or
+        except (sqlalchemy.orm.exc.MultipleResultsFound,
                 sqlalchemy.orm.exc.NoResultFound) as e:
             logger.exception(e.message)
             return False
