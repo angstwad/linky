@@ -1,7 +1,7 @@
 import db
 import exc
 import config
-import mail
+import mailgun
 import threading
 from . import logger
 
@@ -14,12 +14,12 @@ def check_json(json):
 
 
 def mail_thread(email, json):
-    mail.send_email(email, json['title'], json['url']).mail_link()
+    mailgun.SendEmail(email, json['title'], json['url']).mail_link()
 
 
-def send_link_email(key, json):
-    v = db.verification(key)
-    m = db.mail(key)
+def do_email(key, json):
+    v = db.Verification(key)
+    m = db.Mail(key)
     t = threading.Thread(target=mail_thread, args=[m.email_addr, json])
 
     if v.check_verification():
