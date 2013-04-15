@@ -36,11 +36,12 @@ class emails_sent(Base):
     __tablename__ = 'emails_sent'
 
     id = Column('id', Integer, primary_key=True)
-    email = Column('email', ForeignKey('user_verified.email'), unique=True, nullable=False)
-    email_key = Column('email_key', ForeignKey('user_verified.email_key'), nullable=False)
+    email = Column('email', ForeignKey('user_verified.email'),
+                   unique=True, nullable=False)
+    email_key = Column('email_key', ForeignKey('user_verified.email_key'),
+                       nullable=False)
     num_sent = Column('num_sent', Integer)
 
 
-class create_db(object):
-    def __init__(self):
-        Base.metadata.create_all()
+def create_db():
+    Base.metadata.create_all()
