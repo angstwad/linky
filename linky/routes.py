@@ -1,10 +1,11 @@
 import exc
 import db
+import send_link
 from flask import render_template, request, abort, jsonify
-from registration import registration_form, send_registration_email
-from send import send_link_email
+from registration import RegistrationForm, send_registration_email
 from . import app
 from . import logger
+
 
 @app.route('/')
 def index():
