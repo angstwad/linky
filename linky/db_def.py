@@ -1,7 +1,7 @@
+from datetime import datetime
 from sqlalchemy import create_engine, Column, Integer, Unicode, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from datetime import datetime
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 engine = create_engine('sqlite:///linky_engine.db')
 Base = declarative_base(bind=engine)

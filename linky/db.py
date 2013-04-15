@@ -104,19 +104,23 @@ class verification(object):
     def _reg_db_to_ver_db(self, q):
         new_record = user_verified(email=q.email, email_key=q.send_key)
         try:
-            logger.info('Attempting to add record to verify DB: %s, %s' % (q.email, q.send_key))
+            logger.info('Attempting to add '
+                        'record to verify DB: %s, %s' % (q.email, q.send_key))
             self.session.add(new_record)
         except BaseException as e:
             logger.exception(e.message)
         else:
-            logger.info('Record added to verify DB: %s, %s' % (q.email, q.send_key))
+            logger.info('Record added '
+                        'to verify DB: %s, %s' % (q.email, q.send_key))
             try:
-                logger.info('Attempting to delete record from register DB: %s' % q.email)
+                logger.info('Attempting to delete '
+                            'record from register DB: %s' % q.email)
                 self.session.delete(q)
             except Exception as e:
                 logger.exception(e.message)
             else:
-                logger.info('Record deleted, purging from DB with session.commit(): %s' % q.email)
+                logger.info('Record deleted, purging from '
+                            'DB with session.commit(): %s' % q.email)
                 self.session.commit()
                 return True
 
@@ -127,9 +131,12 @@ class mail(object):
         self.session = Session()
 
         try:
-            q = self.session.query(user_verified).filter_by(email_key=key).one()
+            q = self.session.query(user_verified)\
+                    .filter_by(email_key=key)\
+                    .one()
         except sqlalchemy.orm.exc.NoResultFound:
-            raise exc.UserNotFoundException('Key not found in DB: %s' % self.key)
+            raise exc.UserNotFoundException('Key not found in '
+                                            'DB: %s' % self.key)
         except sqlalchemy.orm.exc.MultipleResultsFound as e:
             logger.exception(e.message)
         else:
@@ -140,29 +147,40 @@ class mail(object):
         def requery():
             try:
                 logger.info('Requery for key: %s', self.key)
-                self.q = self.session.query(emails_sent).filter_by(email_key=self.key).one()
-            except sqlalchemy.orm.exc.NoResultFound or sqlalchemy.orm.exc.MultipleResultsFound as e:
+                self.q = self.session.query(emails_sent)\
+                             .filter_by(email_key=self.key)\
+                             .one()
+            except (sqlalchemy.orm.exc.NoResultFound,
+                    sqlalchemy.orm.exc.MultipleResultsFound) as e:
                 logger.exception(e.message)
 
         try:
-            logger.info('Looking for user in emails_sent DB: %s' % self.email_addr)
-            self.q = self.session.query(emails_sent).filter_by(email_key=self.key).one()
+            logger.info('Looking for user in emails_sent DB: %s'
+                        % self.email_addr)
+            self.q = self.session.query(emails_sent)\
+                         .filter_by(email_key=self.key)\
+                         .one()
         except sqlalchemy.orm.exc.NoResultFound:
-            logger.info('Email has no entry in emails_sent DB: %s' % self.email_addr)
-            self.session.add(emails_sent(email=self.email_addr, email_key=self.__sendkey, num_sent=0))
+            logger.info('Email has no entry in '
+                        'emails_sent DB: %s' % self.email_addr)
+            self.session.add(emails_sent(email=self.email_addr,
+                                         email_key=self.__sendkey,
+                                         num_sent=0))
             requery()
         except sqlalchemy.orm.exc.MultipleResultsFound as e:
             logger.exception(e.message)
             return False
         finally:
             if self.q.num_sent <= MAX_EMAILS_PER_DAY:
-                logger.info('User under email limit of %d: %s' % (MAX_EMAILS_PER_DAY, self.email_addr))
+                logger.info('User under email limit of '
+                            '%d: %s' % (MAX_EMAILS_PER_DAY, self.email_addr))
                 return True
             else:
                 return False
 
     def plus_one(self):
-        logger.info('Email send count increased for %s to %d', self.q.email, self.q.num_sent)
+        logger.info('Email send count increased for '
+                    '%s to %d', self.q.email, self.q.num_sent)
         if self.q.num_sent is not None:
             self.q.num_sent += 1
         else:
