@@ -25,6 +25,7 @@ logger = log.setup_custom_logger('root-logger')
 # create_db()
 from linky import routes
 
+
 @app.teardown_request
 def close_db(e):
     logger.info('Closing DB Session() on @app.teardown_request')
