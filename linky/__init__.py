@@ -15,13 +15,14 @@
 from flask import Flask
 import config
 import log
-from db_def import Session
+from db_def import Session, create_db
 
 app = Flask(__name__)
 app.config.from_object(config)
 
 logger = log.setup_custom_logger('root-logger')
 
+# create_db()
 from linky import routes
 
 @app.teardown_request
