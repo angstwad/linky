@@ -29,8 +29,12 @@ def send_link_email(key, json):
                 logger.info('Sending URL email to %s' % m.email_addr)
                 t.start()
             else:
-                raise exc.JSONDoesntLookRightException('Malformed JSON: %s' % repr(json))
+                raise exc.JSONDoesntLookRightException('Malformed JSON: %s'
+                                                       % repr(json))
         else:
-            raise exc.OverEmailSentLimitException('User over limit of %d emails per day.' % config.MAX_EMAILS_PER_DAY)
+            raise exc.OverEmailSentLimitException('User over limit of %d '
+                                                  'emails per day.' %
+                                                  config.MAX_EMAILS_PER_DAY)
     else:
-        raise exc.UserNotVerifiedException('User send key %s cannot be verified.' % key)
+        raise exc.UserNotVerifiedException('User send key %s '
+                                           'cannot be verified.' % key)

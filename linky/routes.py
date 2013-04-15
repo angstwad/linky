@@ -1,10 +1,10 @@
-from . import app
-from . import logger
+import exc
+import db
 from flask import render_template, request, abort, jsonify
 from registration import registration_form, send_registration_email
 from send import send_link_email
-import exc
-import db
+from . import app
+from . import logger
 
 @app.route('/')
 def index():
@@ -17,23 +17,23 @@ def register_page():
 
     if form.validate() and request.method == 'POST':
         db_result = db.register(form.email.data).do_register()
-
-        if isinstance(db_result, tuple):
-            if db_result.is_good is True:
-                send_registration_email(db_result.email, db_result.hash)
-                return render_template('register.html', title='Registered!', form=form, db_results=db_result)
-            elif db_result.is_good is False:
-                return render_template('register.html', title='Oops!', form=form, db_results=db_result)
-        else:
-            abort(500)
+        if db_result:
+            send_registration_email(db_result.email, db_result.hash)
+            return render_template('register.html', title='Registered!',
+                                   form=form, db_results=db_result)
+        elif not db_result:
+            return render_template('register.html', title='Oops!',
+                                   form=form, db_results=db_result)
     else:
-        return render_template('register.html', title='Register', form=form, do_register=True)
+        return render_template('register.html', title='Register',
+                               form=form, do_register=True)
 
 
 @app.route('/verify/<veri_code>')
 def verify(veri_code):
     result = db.verification(veri_code).run_verification()
-    return render_template('verify.html', title="Verify", code=veri_code, result=result)
+    return render_template('verify.html', title="Verify",
+                           code=veri_code, result=result)
 
 
 @app.route('/recover')
@@ -58,7 +58,9 @@ def send(userid):
         status = None
         try:
             send_link_email(userid, request.json)
-        except (exc.UserNotVerifiedException, exc.UserNotFoundException, exc.OverEmailSentLimitException,
+        except (exc.UserNotVerifiedException,
+                exc.UserNotFoundException,
+                exc.OverEmailSentLimitException,
                 exc.JSONDoesntLookRightException) as e:
             logger.exception(e.message)
             status = e.message
