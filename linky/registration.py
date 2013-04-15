@@ -1,5 +1,5 @@
 import threading
-import mail
+import mailgun
 from flask.ext.wtf import Form, TextField, Required, Email
 
 REG_EMAIL_SUBJ = "Welcome to linkyto.me"
@@ -23,18 +23,18 @@ The linkyto.me Team
 REG_LINK = "http://linkyto.me/verify/{}"
 
 
-class registration_form(Form):
+class RegistrationForm(Form):
     email = TextField("Email", validators=[Required(), Email()])
 
 
 def registration_email_thread(recp, body):
-        m = mail.send_email(recp, REG_EMAIL_SUBJ, body)
+        m = mailgun.SendEmail(recp, REG_EMAIL_SUBJ, body)
         m.mail_link()
 
 
-def send_registration_email(ver_email, ver_hash):
-    url = REG_LINK.format(ver_hash)
+def send_registration_email(email, key):
+    url = REG_LINK.format(key)
     body = REG_EMAIL_BODY.format(url)
     mail_thread = threading.Thread(target=registration_email_thread,
-                                   args=[ver_email, body])
+                                   args=[email, body])
     mail_thread.start()
