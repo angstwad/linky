@@ -115,64 +115,80 @@ class Verification(object):
 
 
 class Mail(object):
-    def __init__(self, key):
-        self.key = key
+    def __init__(self, user_provided_key):
+        self.user_provided_key = user_provided_key
         self.session = Session()
 
         try:
             q = self.session.query(UserVerified)\
-                    .filter_by(email_key=key)\
+                    .filter_by(email_key=user_provided_key)\
                     .one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise exc.UserNotFoundException('Key not found in '
-                                            'DB: %s' % self.key)
+                                            'DB: %s' % self.user_provided_key)
         except sqlalchemy.orm.exc.MultipleResultsFound as e:
             logger.exception(e.message)
         else:
             self.email_addr = q.email
-            self.__sendkey = q.email_key
+            self.key_from_db = q.email_key
 
     def can_send(self):
         def requery():
             try:
-                logger.info('Requery for key: %s', self.key)
+                logger.info('Requery for key: %s', self.user_provided_key)
                 self.q = self.session.query(EmailsSent)\
-                             .filter_by(email_key=self.key)\
+                             .filter_by(email_key=self.user_provided_key)\
                              .one()
             except (sqlalchemy.orm.exc.NoResultFound,
                     sqlalchemy.orm.exc.MultipleResultsFound) as e:
                 logger.exception(e.message)
 
+        def insert_record(record):
+            logger.info('Adding new record to emails_sent DB for email: %s'
+                        % self.email_addr)
+            self.session.add(record)
+            try:
+                logger.info('Committing transaction for new record, email %s'
+                            % self.email_addr)
+                self.session.commit()
+            except Exception as e:
+                logger.exception(e)
+
         try:
-            logger.info('Looking for user in emails_sent DB: %s'
+            logger.info('Looking for user in emails_sent table: %s'
                         % self.email_addr)
             self.q = self.session.query(EmailsSent)\
-                         .filter_by(email_key=self.key)\
+                         .filter_by(email_key=self.user_provided_key)\
                          .one()
         except sqlalchemy.orm.exc.NoResultFound:
-            logger.info('Email has no entry in '
-                        'emails_sent DB: %s' % self.email_addr)
-            self.session.add(EmailsSent(email=self.email_addr,
-                                        email_key=self.__sendkey,
-                                        num_sent=0))
+            logger.info('Email has no entry in emails_sent table: %s'
+                        % self.email_addr)
+            record = EmailsSent(email=self.email_addr,
+                                email_key=self.key_from_db,
+                                num_sent=0)
+            insert_record(record)
             requery()
         except sqlalchemy.orm.exc.MultipleResultsFound as e:
             logger.exception(e.message)
             return False
+        else:
+            logger.info('Result found in emails_sent table for email: %s'
+                        % self.email_addr)
         finally:
             if self.q.num_sent <= MAX_EMAILS_PER_DAY:
                 logger.info('User under email limit of '
                             '%d: %s' % (MAX_EMAILS_PER_DAY, self.email_addr))
+                self.plus_one()
                 return True
             else:
                 return False
 
     def plus_one(self):
-        logger.info('Email send count increased for '
-                    '%s to %d', self.q.email, self.q.num_sent)
         if self.q.num_sent is not None:
             self.q.num_sent += 1
         else:
             self.q.num_sent = 1
+        logger.info('Email send count increased for %s to %d'
+                    % (self.q.email, self.q.num_sent))
         self.session.add(self.q)
         self.session.commit()
