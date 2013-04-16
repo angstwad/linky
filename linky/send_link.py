@@ -37,5 +37,5 @@ def do_email(key, json):
                                                   'emails per day.' %
                                                   config.MAX_EMAILS_PER_DAY)
     else:
-        raise exc.UserNotVerifiedException('User send key %s '
-                                           'cannot be verified.' % key)
+        raise exc.UserNotVerifiedException('User key %s cannot be verified.'
+                                           % key)
