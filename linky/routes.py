@@ -63,16 +63,16 @@ def send(userid):
     elif not request.json:
         abort(400)
     else:
-        status = None
         try:
             send_link.do_email(userid, request.json)
         except (exc.UserNotVerifiedException,
                 exc.UserNotFoundException,
                 exc.OverEmailSentLimitException,
                 exc.JSONDoesntLookRightException) as e:
-            logger.exception(e.message)
-            status = e.message
+            logger.warning(e.message)
+            return jsonify({'status': {'error': e.message}})
         else:
-            status = 'OK'
-        finally:
-            return jsonify(status=status)
+            return jsonify(status='OK')
+
+
+
