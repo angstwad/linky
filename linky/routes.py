@@ -1,8 +1,9 @@
 import exc
 import db
 import send_link
-from flask import render_template, request, abort, jsonify
+from flask import render_template, request, abort, jsonify, redirect, flash
 from registration import RegistrationForm, send_registration_email
+import recover
 from . import app
 from . import logger
 
@@ -15,8 +16,7 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
     form = RegistrationForm(request.form)
-
-    if form.validate() and request.method == 'POST':
+    if form.validate_on_submit() and request.method == 'POST':
         reg = db.Register(form.email.data)
         is_success = reg.do_register()
         if is_success:
@@ -29,25 +29,41 @@ def register_page():
                                    error=reg.error)
     else:
         return render_template('register.html', title='Register',
-                               form=form, show_registration=True)
+                               form=form, show_form=True)
 
 
 @app.route('/verify/<veri_code>')
 def verify(veri_code):
     verify = db.Verification(veri_code)
-    result = verify.run_verification()
-    if not result:
+    good_result = verify.run_verification()
+    if not good_result:
         return render_template('verify.html', title="Verify",
                                code=veri_code, result=verify.error)
     else:
-        return render_template('verify.html', title="Verify",
-                               code=veri_code, result=result)
+        return redirect('/user/%s' % veri_code)
 
 
-@app.route('/recover')
+@app.route('/recover', methods=['GET', 'POST'])
 def recover():
-    return render_template('recover.html')
+    form = recover.RecoverForm(request.form)
+    if form.validate_on_submit() and request.method == 'POST':
+        response = recover.do_recover(form.email.data)
+        if isinstance(response['response'], str):
+            flash(response['response'])
+            return render_template('recover.html', title="Recover",
+                                   form=form)
+        else:
+            redirect('/user/%s' % response['response']['key'])
+    else:
+            return render_template('recover.html', title="Recover",
+                                   form=form, show_form=True)
 
+
+@app.route('/user/<userid>')
+def userpage(userid):
+    return render_template('userpage.html', title='User Page',
+                           userid=userid)
+# TODO: Implement user's home page to get their bookmark
 
 @app.route('/user/<userid>/send', methods=['POST'])
 def send(userid):
