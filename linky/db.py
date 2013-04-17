@@ -53,14 +53,16 @@ class Register(object):
                     .filter_by(email=self.email)\
                     .first()
         if q_ver:
-            return {'email': q_ver.email,
+            return {'status': 'verified',
+                    'email': q_ver.email,
                     'key': q_ver.email_key}
         else:
             q_reg = self.session.query(UserRegister)\
                                 .filter_by(email=self.email)\
                                 .first()
             if q_reg:
-                return {'email': q_reg.email,
+                return {'status': 'registered',
+                        'email': q_reg.email,
                         'key': q_reg.send_key}
 
 
@@ -107,7 +109,7 @@ class Verification(object):
             logger.info('Abort commit, key has already been verified: '
                         '%s' % self.key)
             self.error = 'Key has already been verified.'
-            return False
+            return True
         else:
             logger.info('Record added '
                         'to verify DB: %s, %s' % (q.email, q.send_key))
