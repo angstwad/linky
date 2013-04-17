@@ -1,6 +1,7 @@
 {% extends "header.html" %}
 
 {% block content %}
+{% if show_form %}
 <form method="POST" action="">
     {{ form.hidden_tag() }}
     {{ form.email.label }} {{ form.email }}
@@ -9,4 +10,14 @@
     {% endfor %}
     <input type="submit" value="Check">
 </form>
+{% else %}
+    {% for error in form.errors %}
+    <ul>{{ error }}</ul>
+    {% endfor %}
+    <h1>{{ form.email.data }}</h1>
+    {% for message in get_flashed_messages() %}
+    {{ message }}
+    {% endfor %}
+{% endif %}
+
 {% endblock %}
