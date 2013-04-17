@@ -44,7 +44,7 @@ def verify(veri_code):
 
 
 @app.route('/recover', methods=['GET', 'POST'])
-def recover():
+def recovery():
     form = recover.RecoverForm(request.form)
     if form.validate_on_submit() and request.method == 'POST':
         response = recover.do_recover(form.email.data)
