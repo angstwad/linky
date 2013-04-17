@@ -17,9 +17,6 @@ class SendEmail(object):
                                   'subject':  self.__subject,
                                   'text': self.__content}
 
-    def mail_link(self):
-        self.__send()
-
     def __send(self):
         r = requests.post(self.__mailgunURL,
                           auth=HTTPBasicAuth('api', self.__apikey),
@@ -27,3 +24,6 @@ class SendEmail(object):
         self.mail_status_code = r.status_code
         logger.info('Email sent - <%s> - Mailgun Status Code: %s'
                     % (self.email, self.mail_status_code))
+
+    def mail_link(self):
+        self.__send()
