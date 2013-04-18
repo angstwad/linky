@@ -1,6 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if pagename %}
     <title>{{ title }} | LinkyTo.me</title>
     {% else %}
@@ -8,13 +13,18 @@
     {% endif %}
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
+    <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+            <a class="brand" href="{{ url_for('index') }}">linkyto<i class="icon-share"></i>me</a>
+            <ul class="nav">
+                <li class="{{ '%s' % register_active if register_active }}"><a href="{{ url_for('registry') }}">Register</a></li>
+                <li class="{{ '%s' % recover_active if recover_active }}"><a href="{{ url_for('recovery') }}">Recover</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+{#{% imports "footer.html" %}#}
 </body>
 </html>

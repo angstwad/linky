@@ -1,12 +1,10 @@
 {% extends "header.html" %}
 
 {% block content %}
-    <div class="container">
     {% if show_form %}
-
             <div class="row">
                 <div class="span8">
-                    <h1>Sign up for linkyto.me.</h1>
+                    <h1>Sign up for linkyto<i class="icon-share"></i>me</h1>
                     <p class="lead">You'll receive an email shortly after registering.</p>
                 </div>
             </div>
@@ -39,7 +37,5 @@
         <h1>Whoa!</h1>
         <p><span class="text-error">{{ error }}</span>  Need to
             <a href="{{ url_for('recovery') }}">recover</a> your account?</p>
-
     {% endif %}
-    </div>
 {% endblock %}
