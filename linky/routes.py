@@ -51,7 +51,7 @@ def recovery():
     if form.validate_on_submit() and request.method == 'POST':
         response = recover.do_recover(form.email.data)
         if response:
-            flash(response['response'])
+            flash(response['response'], 'ok')
         else:
             flash('This email does not have an account.', 'error')
         return render_template('recover.html', title="Recover",
@@ -87,6 +87,11 @@ def send(userid):
                 exc.OverEmailSentLimitException,
                 exc.JSONDoesntLookRightException) as e:
             logger.warning(e.message)
-            return jsonify({'status': {'error': e.message}})
+            return jsonify({'status': {'error': e.message}}), 500
         else:
             return jsonify(status='OK')
+
+
+@app.errorhandler(404)
+def fourohfour(error):
+    return render_template('404.html'), 404
