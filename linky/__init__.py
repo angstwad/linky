@@ -22,13 +22,12 @@ app = Flask(__name__)
 app.config.from_object(config)
 
 if not app.debug:
-    logger = logging.Logger()
     handler = logging.FileHandler('app.log')
     handler.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s '
                                '[in %(pathname)s:%(lineno)d]')
     handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    app.logger.addHandler(handler)
 
 # create_db()
 from linky import routes
