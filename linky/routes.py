@@ -14,9 +14,9 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def registry():
-    form = registration.RegistrationForm(request.form)
-    if form.validate():
-        reg = db.Register(form.email.data)
+    form = registration.RegistrationForm()
+    if form.validate_on_submit():
+        reg = db.Register(request.form.get('email'))
         is_success = reg.do_register()
         if is_success:
             registration.send_registration_email(reg.email, reg.key)
