@@ -12,10 +12,12 @@ class SendEmail(object):
         self._subject = subject
         self._content = content
 
-        self.mailgun_send_dict = {'from': 'LinkyMail <linkymail@linkyto.me>',
-                                  'to': self.email,
-                                  'subject':  self._subject,
-                                  'text': self._content}
+        self.mailgun_send_dict = {
+            'from': 'LinkyMail <linkymail@linkyto.me>',
+            'to': self.email,
+            'subject':  self._subject,
+            'text': self._content
+        }
 
     def _send(self):
         r = requests.post(self._mailgunURL,

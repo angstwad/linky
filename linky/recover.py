@@ -1,9 +1,11 @@
-import db
-import mailgun
 from flask.ext.wtf import Form, Required, Email
 from flask.ext.wtf.html5 import EmailField
+
+import db
+import mailgun
 from registration import send_registration_email
 from . import app, logger
+
 
 EMAIL_SUBJ = "linkyto.me - Recovering Your Account"
 
