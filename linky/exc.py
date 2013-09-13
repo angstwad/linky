@@ -13,6 +13,6 @@ class OverEmailSentLimitException(Exception):
             self.message = message
 
 
-class JSONDoesntLookRightException(Exception):
+class FormDoesntLookRightException(Exception):
     def __init__(self, message):
         self.message = message

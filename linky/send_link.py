@@ -30,8 +30,8 @@ def do_email(key, json):
                 app.logger.info('Sending URL email to %s' % m.email_addr)
                 t.start()
             else:
-                raise exc.JSONDoesntLookRightException('Malformed JSON: %s'
-                                                       % repr(json))
+                raise exc.FormDoesntLookRightException('Malformed Form: %s'
+                                                       % repr(form))
         else:
             raise exc.OverEmailSentLimitException('User over limit of %d '
                                                   'emails per day.' %
