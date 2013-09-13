@@ -89,6 +89,9 @@ def send(userid):
         else:
             return jsonify(status='OK')
 
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
 @app.errorhandler(404)
 def fourohfour(error):
