@@ -4,7 +4,7 @@ from flask.ext.wtf.html5 import EmailField
 import db
 import mailgun
 from registration import send_registration_email
-from . import app, logger
+from . import app
 
 
 EMAIL_SUBJ = "linkyto.me - Recovering Your Account"
@@ -28,24 +28,24 @@ class RecoverForm(Form):
 
 
 def send_mail(userdata):
-    logger.debug('Building recovery email for %s', userdata['email'])
+    app.logger.debug('Building recovery email for %s', userdata['email'])
     body = EMAIL_BODY.format('%s/user/%s'
                              % (app.config['BASE_URL'], userdata['key']))
-    logger.info('Starting send of account recovery email for %s'
+    app.logger.info('Starting send of account recovery email for %s'
                 % userdata['email'])
     mailgun.SendEmail(userdata['email'], EMAIL_SUBJ, body).mail_link()
 
 
 def do_recover(email):
-    logger.info('Starting account recovery for %s on user request.' % email)
+    app.logger.info('Starting account recovery for %s on user request.' % email)
     userdata = db.Register(email).recover()
     if not userdata:
         return False
     elif userdata['status'] == 'registered':
-        logger.info('Account was previously registered: %s' % email)
+        app.logger.info('Account was previously registered: %s' % email)
         send_registration_email(userdata['email'], userdata['key'])
         return {'response': 'Your registration email was resent.'}
     elif userdata['status'] == 'verified':
-        logger.info('Account has already been verified: %s' % email)
+        app.logger.info('Account has already been verified: %s' % email)
         send_mail(userdata)
         return {'response': 'Your account information was resent.'}

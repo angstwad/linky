@@ -4,14 +4,14 @@ import db
 import exc
 import config
 import mailgun
-from . import logger
+from . import app
 
 
-def check_json(json):
-    if 'title' in json.keys() and 'url' in json.keys():
+def check_form(form):
+    app.logger.debug("Title: %s " % form.get('title'))
+    app.logger.debug("Url: %s" % form.get('url'))
+    if form.get('title') and form.get('url'):
         return True
-    else:
-        return False
 
 
 def mail_thread(email, json):
@@ -24,10 +24,10 @@ def do_email(key, json):
     t = threading.Thread(target=mail_thread, args=[m.email_addr, json])
 
     if v.check_verification():
-        if m.can_send() is True:
-            logger.info('User approved to send link: %s', m.email_addr)
-            if check_json(json):
-                logger.info('Sending URL email to %s' % m.email_addr)
+        if m.can_send():
+            app.logger.info('User approved to send link: %s', m.email_addr)
+            if check_form(form):
+                app.logger.info('Sending URL email to %s' % m.email_addr)
                 t.start()
             else:
                 raise exc.JSONDoesntLookRightException('Malformed JSON: %s'

@@ -5,7 +5,6 @@ import send_link
 import registration
 import recover
 from . import app
-from . import logger
 
 
 @app.route('/')
@@ -80,13 +79,14 @@ def send(userid):
     elif not request.json:
         abort(400)
     else:
+        app.logger.debug(request.form)
         try:
             send_link.do_email(userid, request.json)
         except (exc.UserNotVerifiedException,
                 exc.UserNotFoundException,
                 exc.OverEmailSentLimitException,
-                exc.JSONDoesntLookRightException) as e:
-            logger.warning(e.message)
+                exc.FormDoesntLookRightException) as e:
+            app.logger.warning(e.message)
             return jsonify({'status': {'error': e.message}}), 500
         else:
             return jsonify(status='OK')

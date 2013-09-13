@@ -4,7 +4,7 @@ import exc
 import gen_key
 from config import MAX_EMAILS_PER_DAY
 from db_def import Session, UserRegister, UserVerified, EmailsSent
-from . import logger
+from . import app
 
 
 class Register(object):
@@ -13,23 +13,23 @@ class Register(object):
         self.email = email
 
     def do_register(self):
-        logger.info('Beginning register of email: %s' % self.email)
+        app.logger.info('Beginning register of email: %s' % self.email)
         if not self.__in_verified_db():
             key = gen_key.generate(self.email)
             return self.__insert_reg_db(key)
 
     def __in_verified_db(self):
-        logger.info('Checking verified DB for email %s.' % self.email)
+        app.logger.info('Checking verified DB for email %s.' % self.email)
         if self.session.query(UserVerified)\
                        .filter_by(email=self.email)\
                        .count() > 0:
-            logger.info('Registration fail, found in verified DB: %s'
+            app.logger.info('Registration fail, found in verified DB: %s'
                         % self.email)
             self.error = "Email has already been verified."
             return True
 
     def __insert_reg_db(self, key):
-        logger.info('Beginning insert of %s into user_register DB.'
+        app.logger.info('Beginning insert of %s into user_register DB.'
                     % self.email)
         new_user = UserRegister(email=self.email, send_key=key)
         self.session.add(new_user)
@@ -38,13 +38,13 @@ class Register(object):
             self.session.commit()
         except sqlalchemy.exc.IntegrityError:
             self.error = "Email has already been registered."
-            logger.info('Duplicate email found in '
+            app.logger.info('Duplicate email found in '
                         'user_registered table: %s' % self.email)
             return False
         except Exception as e:
-            logger.exception(e.message)
+            app.logger.exception(e.message)
         else:
-            logger.info('Email registered, written to DB: %s' % self.email)
+            app.logger.info('Email registered, written to DB: %s' % self.email)
             self.key = key
             return True
 
@@ -73,45 +73,45 @@ class Verification(object):
 
     def check_verification(self):
         try:
-            logger.info('Check if verified key %s' % self.key)
+            app.logger.info('Check if verified key %s' % self.key)
             q = self.session.query(UserVerified)\
                     .filter_by(email_key=self.key)\
                     .one()
         except (sqlalchemy.orm.exc.MultipleResultsFound,
                 sqlalchemy.orm.exc.NoResultFound) as e:
-            logger.exception(e.message)
+            app.logger.exception(e.message)
             return False
         else:
-            logger.info('Checked key, user is verified: %s' % q.email)
+            app.logger.info('Checked key, user is verified: %s' % q.email)
             return True
 
     def run_verification(self):
         try:
-            logger.info('Verify key %s' % self.key)
+            app.logger.info('Verify key %s' % self.key)
             q = self.session.query(UserRegister)\
                     .filter_by(send_key=self.key)\
                     .one()
         except (sqlalchemy.orm.exc.NoResultFound,
                 sqlalchemy.orm.exc.MultipleResultsFound) as e:
-            logger.exception(e.message)
+            app.logger.exception(e.message)
         else:
             if self.__move_to_verified(q):
                 return True
 
     def __move_to_verified(self, q):
         new_record = UserVerified(email=q.email, email_key=q.send_key)
-        logger.info('Attempting to add '
+        app.logger.info('Attempting to add '
                     'record to verify DB: %s, %s' % (q.email, q.send_key))
         self.session.add(new_record)
         try:
             self.session.commit()
         except sqlalchemy.exc.IntegrityError:
-            logger.info('Abort commit, key has already been verified: '
+            app.logger.info('Abort commit, key has already been verified: '
                         '%s' % self.key)
             self.error = 'Key has already been verified.'
             return True
         else:
-            logger.info('Record added '
+            app.logger.info('Record added '
                         'to verify DB: %s, %s' % (q.email, q.send_key))
             return True
 
@@ -129,7 +129,7 @@ class Mail(object):
             raise exc.UserNotFoundException('Key not found in '
                                             'DB: %s' % self.user_provided_key)
         except sqlalchemy.orm.exc.MultipleResultsFound as e:
-            logger.exception(e.message)
+            app.logger.exception(e.message)
         else:
             self.email_addr = q.email
             self.key_from_db = q.email_key
@@ -137,33 +137,33 @@ class Mail(object):
     def can_send(self):
         def requery():
             try:
-                logger.info('Requery for key: %s', self.user_provided_key)
+                app.logger.info('Requery for key: %s', self.user_provided_key)
                 self.q = self.session.query(EmailsSent)\
                              .filter_by(email_key=self.user_provided_key)\
                              .one()
             except (sqlalchemy.orm.exc.NoResultFound,
                     sqlalchemy.orm.exc.MultipleResultsFound) as e:
-                logger.exception(e.message)
+                app.logger.exception(e.message)
 
         def insert_record(record):
-            logger.info('Adding new record to emails_sent DB for email: %s'
+            app.logger.info('Adding new record to emails_sent DB for email: %s'
                         % self.email_addr)
             self.session.add(record)
             try:
-                logger.info('Committing transaction for new record, email %s'
+                app.logger.info('Committing transaction for new record, email %s'
                             % self.email_addr)
                 self.session.commit()
             except Exception as e:
-                logger.exception(e)
+                app.logger.exception(e)
 
         try:
-            logger.info('Looking for user in emails_sent table: %s'
+            app.logger.info('Looking for user in emails_sent table: %s'
                         % self.email_addr)
             self.q = self.session.query(EmailsSent)\
                          .filter_by(email_key=self.user_provided_key)\
                          .one()
         except sqlalchemy.orm.exc.NoResultFound:
-            logger.info('Email has no entry in emails_sent table: %s'
+            app.logger.info('Email has no entry in emails_sent table: %s'
                         % self.email_addr)
             record = EmailsSent(email=self.email_addr,
                                 email_key=self.key_from_db,
@@ -171,14 +171,14 @@ class Mail(object):
             insert_record(record)
             requery()
         except sqlalchemy.orm.exc.MultipleResultsFound as e:
-            logger.exception(e.message)
+            app.logger.exception(e.message)
             return False
         else:
-            logger.info('Result found in emails_sent table for email: %s'
+            app.logger.info('Result found in emails_sent table for email: %s'
                         % self.email_addr)
         finally:
             if self.q.num_sent <= MAX_EMAILS_PER_DAY:
-                logger.info('User under email limit of '
+                app.logger.info('User under email limit of '
                             '%d: %s' % (MAX_EMAILS_PER_DAY, self.email_addr))
                 self.plus_one()
                 return True
@@ -190,7 +190,7 @@ class Mail(object):
             self.q.num_sent += 1
         else:
             self.q.num_sent = 1
-        logger.info('Email send count increased for %s to %d'
+        app.logger.info('Email send count increased for %s to %d'
                     % (self.q.email, self.q.num_sent))
         self.session.add(self.q)
         self.session.commit()

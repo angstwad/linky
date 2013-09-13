@@ -28,5 +28,5 @@ from linky import routes
 
 @app.teardown_request
 def close_db(e):
-    logger.info('Closing DB Session() on @app.teardown_request')
+    app.logger.info('Closing DB Session() on @app.teardown_request')
     Session.close_all()

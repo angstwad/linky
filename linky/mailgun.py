@@ -1,6 +1,6 @@
 import requests
 from requests.auth import HTTPBasicAuth
-from . import app, logger
+from . import app
 
 
 class SendEmail(object):
@@ -24,8 +24,8 @@ class SendEmail(object):
                           auth=HTTPBasicAuth('api', self._apikey),
                           data=self.mailgun_send_dict)
         self.mail_status_code = r.status_code
-        logger.info('Email sent - <%s> - Mailgun Status Code: %s'
-                    % (self.email, self.mail_status_code))
+        app.logger.info('Email sent - <%s> - Mailgun Status Code: %s'
+                        % (self.email, self.mail_status_code))
 
     def mail_link(self):
         self._send()
