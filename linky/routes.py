@@ -76,12 +76,10 @@ def send(userid):
         abort(401)
     elif not len(userid) == 40:
         abort(400)
-    elif not request.json:
-        abort(400)
     else:
         app.logger.debug(request.form)
         try:
-            send_link.do_email(userid, request.json)
+            send_link.do_email(userid, request.form)
         except (exc.UserNotVerifiedException,
                 exc.UserNotFoundException,
                 exc.OverEmailSentLimitException,

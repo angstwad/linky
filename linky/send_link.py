@@ -18,10 +18,10 @@ def mail_thread(email, json):
     mailgun.SendEmail(email, json['title'], json['url']).mail_link()
 
 
-def do_email(key, json):
+def do_email(key, form):
     v = db.Verification(key)
     m = db.Mail(key)
-    t = threading.Thread(target=mail_thread, args=[m.email_addr, json])
+    t = threading.Thread(target=mail_thread, args=[m.email_addr, form])
 
     if v.check_verification():
         if m.can_send():
