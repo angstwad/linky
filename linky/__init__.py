@@ -23,11 +23,12 @@
 import envelopes
 import pymongo.errors
 
-from flask.ext.pymongo import PyMongo
 from flask.ext import cors
+from flask.ext.pymongo import PyMongo
 from flask import Flask, g, render_template, request, flash, abort
 
-from linky import bookmarklet, forms, config
+from config import config
+from linky import bookmarklet, forms
 
 
 app = Flask(__name__)
@@ -107,7 +108,7 @@ def _send_link(title, url, to_addr):
     subject = title
     body = """%(url)s
 
-Love,
+Thanks,
 The linkyto.me Team
 """ % dict(url=url)
 
@@ -171,7 +172,8 @@ def verify(uuid):
         raise
     else:
         _send_verified_email(acct_key, result.get('_id'))
-        return render_template('signup-verified.html', user=result, update_status=update)
+        return render_template('signup-verified.html', user=result,
+                               update_status=update)
 
 
 @app.route('/user/<uuid>')

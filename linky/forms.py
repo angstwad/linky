@@ -16,8 +16,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from flask.ext.wtf import Form
 from wtforms import TextField
+from flask.ext.wtf import Form
 from wtforms.validators import Required, Email
 
 
