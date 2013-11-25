@@ -1,0 +1,53 @@
+{% extends "header.html" %}
+
+{% block header %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', file='linky_custom.css') }}">
+{% endblock %}
+
+{% block title %}
+    Signup
+{% endblock %}
+
+{% block container %}
+    <div class="row">
+        <div class="jumbotron">
+            <h1>Sign Up for Linky</h1>
+        </div>
+    </div>
+
+    <div class="buffer_25"></div>
+
+    {% from "macros.html" import flashes with context %}
+    {{ flashes() }}
+
+    <div class="buffer_25"></div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form form-horizontal" method="post" action="{{ url_for('signup') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">{{ form.email.label.text }}</label>
+                            <div class="col-sm-8">
+                                {{ form.email(size=30) }}
+                                {% if form.email.errors %}
+                                    {% for err in form.email.errors %}
+                                        <p class="text-danger">{{ err }}</p>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-4">
+                                <button type="submit" id="submitSignupForm" class="btn btn-primary">Signup</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

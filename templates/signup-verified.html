@@ -1,0 +1,31 @@
+{% extends "header.html" %}
+
+{% block title %}
+    Verified
+{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='linky_custom.css') }}">
+{% endblock %}
+
+{% block container %}
+    <div class="jumbotron">
+        <h1>Success!</h1>
+    </div>
+
+    <div class="buffer_100"></div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <p class="panel-title">Success</p>
+                </div>
+                <div class="panel-body">
+                    <p>Verification complete.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

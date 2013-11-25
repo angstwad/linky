@@ -1,0 +1,32 @@
+{% extends "header.html" %}
+
+{% block title %}
+    User
+{% endblock %}
+
+{% block container %}
+    <div class="row">
+        <div class="col-md-8 ">
+            <h3>Your User Information</h3>
+            <dl class="dl-horizontal">
+                <dt>Email</dt>
+                <dd>{{ result._id }}</dd>
+
+                <dt>User Key</dt>
+                <dd>{{ result.acct_key }}</dd>
+
+                <dt>Email Send URL</dt>
+                <dd><a href="{{ url }}">{{ url }}</a></dd>
+
+                <dt>Account Type</dt>
+                <dd>Free</dd>
+            </dl>
+        </div>
+
+        <div class="col-md-4">
+            <h3>Your Bookmarklet</h3>
+            <p>Click and drag your bookmarklet into your bookmarks bar.</p>
+            <a href="{{ bookmarklet }}">linkyto.me bookmarklet</a>
+        </div>
+    </div>
+{% endblock %}
