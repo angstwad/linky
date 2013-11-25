@@ -1,3 +1,3 @@
-linky/config/
+linky/config/config.py
 *.py[oc]
 .idea/
