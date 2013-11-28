@@ -1,3 +1,4 @@
 linky/config/config.py
 *.py[oc]
 .idea/
+linky/config/newrelic.ini
