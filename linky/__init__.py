@@ -21,8 +21,8 @@
 # limitations under the License.
 
 import newrelic.agent
-#import os.path
-newrelic.agent.initialize('linky/config/newrelic.ini')
+import os.path
+newrelic.agent.initialize(os.path.join(os.path.dirname(__file__), 'config', 'newrelic.ini'))
 
 import envelopes
 import pymongo.errors
