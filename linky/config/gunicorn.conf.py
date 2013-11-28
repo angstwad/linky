@@ -4,7 +4,7 @@ appname = "linky"
 
 procname = appname
 
-bind = "unix:/tmp/%s" % appname
+bind = "unix:/tmp/%s.sock" % appname
 workers = multiprocessing.cpu_count() * 2 + 1
 max_requests = 1000
 preload_app = True

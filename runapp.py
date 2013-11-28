@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Copyright 2013 Paul Durivage <pauldurivage@gmail.com>
 #
 # This file is part of linky.
