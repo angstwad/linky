@@ -20,6 +20,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import newrelic.agent
+import os.path
+newrelic.agent.initialize(os.path.abspath('linky/config/newrelic.ini'))
+
 import envelopes
 import pymongo.errors
 
