@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Copyright 2013 Paul Durivage <pauldurivage@gmail.com>
 #
 # This file is part of linky.
@@ -24,16 +21,16 @@ import newrelic.agent
 import os.path
 newrelic.agent.initialize(os.path.join(os.path.dirname(__file__), 'config', 'newrelic.ini'))
 
-import envelopes
 import pymongo.errors
 
 from flask.ext import cors
 from flask.ext.pymongo import PyMongo
 from flask import Flask, g, render_template, request, flash, abort
 
+import mail
+
 from config import config
 from linky import bookmarklet, forms
-
 
 app = Flask(__name__)
 app.config.from_object(config)
@@ -50,85 +47,6 @@ def index():
 def _gen_uuid():
     import uuid
     return uuid.uuid4().get_hex()
-
-
-def _send_signup_email(signup_key, to_addr):
-    subject = "linkyto.me Registration -- Welcome!"
-    body = """
-Hello,
-
-Somebody, probably you, signed up for an account at linkyto.me.  In order to
-verify your account, please click or open the following link:
-%(base_url)s/user/verify/%(signup_key)s
-
-Thanks,
-The linkyto.me Team
-""" % dict(signup_key=signup_key, base_url=BASE_URL)
-
-    envelope = envelopes.Envelope(
-        to_addr=to_addr,
-        from_addr=config.EMAIL_NOREPLY,
-        subject=subject,
-        text_body=body
-    )
-    smtp = envelopes.SMTP(config.SMTP_HOST)
-    try:
-        smtp.send(envelope)
-    except Exception as e:
-        app.logger.exception(e)
-        raise
-
-
-def _send_verified_email(acct_key, to_addr):
-    subject = "You're verified on linkyto.me"
-    body = """
-Hello,
-
-Thanks for verifying your account.  Please proceed to your account page where
-you manage your settings and retrieve your bookmarklet:
-
-%(base_url)s/user/%(send_key)s
-
-Thanks,
-The linkyto.me Team
-""" % dict(base_url=BASE_URL, send_key=acct_key)
-
-    envelope = envelopes.Envelope(
-        to_addr=to_addr,
-        from_addr=config.EMAIL_NOREPLY,
-        subject=subject,
-        text_body=body
-    )
-
-    smtp = envelopes.SMTP(config.SMTP_HOST)
-    try:
-        smtp.send(envelope)
-    except Exception as e:
-        app.logger.exception(e)
-        raise
-
-
-def _send_link(title, url, to_addr):
-    subject = title
-    body = """%(url)s
-
-Thanks,
-The linkyto.me Team
-""" % dict(url=url)
-
-    envelope = envelopes.Envelope(
-        to_addr=to_addr,
-        from_addr=config.EMAIL_NOREPLY,
-        subject=subject,
-        text_body=body
-    )
-    smtp = envelopes.SMTP(config.SMTP_HOST)
-    try:
-        smtp.send(envelope)
-    except Exception as e:
-        app.logger.exception(e)
-        raise
-
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -148,7 +66,7 @@ def signup():
                 flash('<strong>Hey!</strong> This email has already been used.', 'danger')
                 return render_template('signup.html', form=form)
             else:
-                _send_signup_email(uuid, email)
+                mail.send_signup_email(uuid, email)
                 return render_template('signup-success.html')
 
         else:
@@ -175,7 +93,7 @@ def verify(uuid):
         app.logger.exception(e)
         raise
     else:
-        _send_verified_email(acct_key, result.get('_id'))
+        mail.send_verified_email(acct_key, result.get('_id'))
         return render_template('signup-verified.html', user=result,
                                update_status=update)
 
@@ -201,7 +119,7 @@ def send_link(uuid):
         return abort(400)
 
     try:
-        _send_link(req_title, req_url, to_addr)
+        mail.send_link(req_title, req_url, to_addr)
     except Exception as e:
         return e.message, 500, {}
     else:
