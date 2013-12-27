@@ -6,26 +6,96 @@
 
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='linky_custom.css') }}">
+    <style type="text/css">
+        /* Space out content a bit */
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        /* Everything but the jumbotron gets side spacing for mobile first views */
+        .header, .marketing, .footer {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        /* Custom page header */
+        .header {
+            border-bottom: 1px solid #e5e5e5;
+        }
+        /* Make the masthead heading the same height as the navigation */
+        .header h3 {
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 40px;
+            padding-bottom: 19px;
+        }
+        /* Custom page footer */
+        .footer {
+            padding-top: 19px;
+            color: #777;
+            bottom: 0px;
+            position: absolute;
+        }
+        /* Customize container */
+        @media(min-width: 768px) {
+            .container {
+                max-width: 730px;
+            }
+        }
+        .container-narrow > hr {
+            margin: 30px 0;
+        }
+        .height-45 {
+            height: 45px;
+        }
+        /* Responsive: Portrait tablets and up */
+        @media screen and(min-width: 768px) {
+            /* Remove the padding we set earlier */
+            .header, .marketing, .footer {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            /* Space out the masthead */
+            .header {
+                margin-bottom: 30px;
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block container %}
-    <div class="jumbotron">
-        <h1>Success!</h1>
-    </div>
-
-    <div class="buffer_100"></div>
-
-    <div class="row">
-        <div class="col-md-8">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <p class="panel-title">Success</p>
-                </div>
-                <div class="panel-body">
-                    <p>Verification complete.</p>
-                </div>
-            </div>
+    {{ super() }}
+    <section>
+        <p><br><br></p>
+        <h1 class="text-center">Your account is verified!</h1>
+        <div class="row">
+            <div class="height-45 col-md-12"></div>
         </div>
+    </section>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <a style="clear: both; width: 100%; top: 50%; left: 50%;" href="{{ url_for('user', uuid=acct_key) }}" class="btn btn-success">Go to Account Page</a>
+            <p class="text-center"><br>
+                Want to continue on to your account page? &nbsp;You can go ahead (or we'll redirect you there shortly).</p>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+    <div class="row">
+        <div class="height-45 col-md-12"></div>
+    </div>
+    <p><br></p>
+    <div class="row">
+        <div class="col-md-4">
+            <p>Reminder: There's no login, so don't lose the next email you receive from us.</p>
+        </div>
+        <div class="col-md-4">
+            <p></p>
+        </div>
+        <div class="col-md-4">
+            <p></p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>&copy; Paul Durivage 2013</p>
     </div>
 {% endblock %}

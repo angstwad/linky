@@ -53,7 +53,7 @@ def _gen_uuid():
 def signup():
     form = forms.SignupForm()
     if form.validate_on_submit():
-        app.logger.debug('Form validate')
+        # app.logger.debug('Form validate')
         email = request.form.get('email')
         if email:
             uuid = _gen_uuid()
@@ -63,7 +63,8 @@ def signup():
                     'signup_key': uuid
                 })
             except pymongo.errors.DuplicateKeyError:
-                flash('<strong>Hey!</strong> This email has already been used.', 'danger')
+                flash('<strong>Hey!</strong> This email '
+                      'has already been used.', 'danger')
                 return render_template('signup.html', form=form)
             else:
                 mail.send_signup_email(uuid, email)
@@ -89,13 +90,15 @@ def verify(uuid):
     }
     try:
         update = g.db.users.update(result, doc)
+        app.logger.debug(update)
+        app.logger.debug(doc)
     except Exception as e:
         app.logger.exception(e)
         raise
     else:
         mail.send_verified_email(acct_key, result.get('_id'))
         return render_template('signup-verified.html', user=result,
-                               update_status=update)
+                               update_status=update, acct_key=acct_key)
 
 
 @app.route('/user/<uuid>')
