@@ -1,10 +1,112 @@
 {% extends "header.html" %}
+
 {% block title %}
-    Home
+    linkyto.me
 {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        /* Space out content a bit */
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        /* Everything but the jumbotron gets side spacing for mobile first views */
+        .header, .marketing, .footer {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        /* Custom page header */
+        .header {
+            border-bottom: 1px solid #e5e5e5;
+        }
+        /* Make the masthead heading the same height as the navigation */
+        .header h3 {
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 40px;
+            padding-bottom: 19px;
+        }
+        /* Custom page footer */
+        .footer {
+            padding-top: 19px;
+            color: #777;
+            position: absolute;
+            bottom: 0px;
+        }
+        /* Customize container */
+        @media(min-width: 768px) {
+            .container {
+                max-width: 730px;
+            }
+        }
+        .container-narrow > hr {
+            margin: 30px 0;
+        }
+        /* Main marketing message and sign up button */
+        .jumbotron {
+            text-align: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .jumbotron .btn {
+            font-size: 21px;
+            padding: 14px 24px;
+        }
+        /* Supporting marketing content */
+        .marketing {
+            margin: 40px 0;
+        }
+        .marketing p + h4 {
+            margin-top: 28px;
+        }
+        /* Responsive: Portrait tablets and up */
+        @media screen and(min-width: 768px) {
+            /* Remove the padding we set earlier */
+            .header, .marketing, .footer {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            /* Space out the masthead */
+            .header {
+                margin-bottom: 30px;
+            }
+            /* Remove the bottom border on the jumbotron for visual effect */
+            .jumbotron {
+                border-bottom: 0;
+            }
+
+        }
+    </style>
+{% endblock %}
+
 {% block container %}
-<div class="jumbotron">
-    <h1>LinkyTo.me</h1>
-    <p class="lead">Email links to yourself, like a boss</p>
-</div>
-{% endblock %}
+    {{ super() }}
+    <div class="jumbotron">
+        <h1>linkyto.me</h1>
+        <p class="lead">linkyto.me is an easy way to save links from all your devices, using any browser, to your email account. &nbsp;It's fast, it's free, and it's awesome.</p>
+        <p><a class="btn btn-lg btn-success" href="{{ url_for('signup') }}">Sign up now</a><a></a></p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <h1>Simple.</h1>
+            <p>It's a bookmarklet. &nbsp;That's it.</p>
+        </div>
+        <div class="col-md-4">
+            <h1 class="text-center">Unobtrusive.</h1>
+            <p>It lives in your bookmark bar until you need it.</p>
+        </div>
+        <div class="col-md-4">
+            <h1 class="text-right">Free.</h1>
+            <p>Yep, it's free. &nbsp;Like, forever free.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; Paul Durivage 2013</p>
+    </div>
+{% endblock container %}
+
+{% block last %}
+{% endblock last %}

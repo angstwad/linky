@@ -4,27 +4,82 @@
     Success
 {% endblock %}
 
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        /* Space out content a bit */
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        /* Everything but the jumbotron gets side spacing for mobile first views */
+        .header, .marketing, .footer {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        /* Custom page header */
+        .header {
+            border-bottom: 1px solid #e5e5e5;
+        }
+        /* Make the masthead heading the same height as the navigation */
+        .header h3 {
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 40px;
+            padding-bottom: 19px;
+        }
+        /* Custom page footer */
+        .footer {
+            padding-top: 19px;
+            color: #777;
+            border-top: 1px solid #e5e5e5 position: absolute;
+            bottom: 0px;
+            position: relative;
+        }
+        /* Customize container */
+        @media(min-width: 768px) {
+            .container {
+                max-width: 730px;
+            }
+        }
+        .container-narrow > hr {
+            margin: 30px 0;
+        }
+        /* Main marketing message and sign up button */
+        .jumbotron {
+            text-align: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        /* Responsive: Portrait tablets and up */
+        @media screen and(min-width: 768px) {
+            /* Remove the padding we set earlier */
+            .header, .marketing, .footer {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            /* Space out the masthead */
+            .header {
+                margin-bottom: 30px;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block container %}
-    <div class="buffer_25"></div>
-
-    <div class="jumbotron">
+    {{ super() }}
+    <section>
         <h1>Success!</h1>
-    </div>
-
-    <div class="row">
-        <div class="buffer_100"></div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-8">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <p class="panel-title">Looks Good!</p>
-                </div>
-                <div class="panel-body">
-                    <p>Please check your email for a verification link in order to complete the signup process.</p>
-                </div>
-            </div>
-        </div>
+        <p><br><br></p>
+    </section>
+    <dl>
+        <dt>What's next?</dt>
+        <dd><p>We've just sent an email to you with instructions for verifying your account.</p></dd>
+        <dt>Oh yeah?</dt>
+        <dd><p>You just need to click the link in the email. That'll take care of verification. After that, we'll send an email with instructions for accessing your account page. There's no login on <a href="https://linkyto.me">linkyto.me</a>, so you'll need to make sure you don't lose the email.</p></dd>
+        <dt>And then...</dt>
+        <dd><p>You save a copy of your bookmarklet.  A unique bookmarklet is generated for your account, which you'll drag into your browsers bookmarks.  Then, from any page, once you click the bookmarklet, your page's data is sent to <a href="https://linkyto.me">linkyto.me</a> and emailed to the address you signed up with.</p></dd>
+    </dl>
+    <div class="footer">
+        <p>&copy; Paul Durivage 2013</p>
     </div>
 {% endblock %}

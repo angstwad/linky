@@ -1,8 +1,63 @@
 {% extends "header.html" %}
 
-{% block header %}
+{% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', file='linky_custom.css') }}">
+    <style type="text/css">
+        /* Space out content a bit */
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        /* Everything but the jumbotron gets side spacing for mobile first views */
+        .header, .marketing, .footer {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        /* Custom page header */
+        .header {
+            border-bottom: 1px solid #e5e5e5;
+        }
+        /* Make the masthead heading the same height as the navigation */
+        .header h3 {
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 40px;
+            padding-bottom: 19px;
+        }
+        /* Custom page footer */
+        .footer {
+            padding-top: 19px;
+            color: #777;
+            bottom: 0px;
+            position: absolute;
+        }
+        /* Customize container */
+        @media(min-width: 768px) {
+            .container {
+                max-width: 730px;
+            }
+        }
+        .container-narrow > hr {
+            margin: 30px 0;
+        }
+        /* Main marketing message and sign up button */
+        .jumbotron {
+            text-align: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        /* Responsive: Portrait tablets and up */
+        @media screen and(min-width: 768px) {
+            /* Remove the padding we set earlier */
+            .header, .marketing, .footer {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            /* Space out the masthead */
+            .header {
+                margin-bottom: 30px;
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block title %}
@@ -10,44 +65,40 @@
 {% endblock %}
 
 {% block container %}
-    <div class="row">
-        <div class="jumbotron">
-            <h1>Sign Up for Linky</h1>
-        </div>
-    </div>
+    {{ super() }}
 
-    <div class="buffer_25"></div>
+    <p><br><br></p>
+    <h1>Sign up for linkyto.<span style="line-height: 1.1;">me</span></h1>
+    <p><br><br></p>
 
     {% from "macros.html" import flashes with context %}
     {{ flashes() }}
 
-    <div class="buffer_25"></div>
-
+    <div class="row"></div>
     <div class="row">
         <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <form class="form form-horizontal" method="post" action="{{ url_for('signup') }}">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">{{ form.email.label.text }}</label>
-                            <div class="col-sm-8">
-                                {{ form.email(size=30) }}
-                                {% if form.email.errors %}
-                                    {% for err in form.email.errors %}
-                                        <p class="text-danger">{{ err }}</p>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-8 col-sm-offset-4">
-                                <button type="submit" id="submitSignupForm" class="btn btn-primary">Signup</button>
-                            </div>
-                        </div>
-                    </form>
+            <form class="form form-horizontal" method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label class="control-label">{{ form.email.label.text }}</label>
+                    <div class="controls">
+                        {{ form.email(class_="form-control") }}
+                    </div>
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
+                            <p class="text-danger">{{ err }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="controls">
+                        <p></p>
+                        <button type="submit" class="btn btn-primary">Sign Up<br></button>
+                        <p></p>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
+    </div>
+    <div class="footer">
+        <p>&copy; Paul Durivage 2013</p>
     </div>
 {% endblock %}
